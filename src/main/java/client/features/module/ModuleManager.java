@@ -67,8 +67,6 @@ public class ModuleManager {
    modules.add(new CivBreak());
    modules.add(new Plugins());
 		modules.add(new AntiVelocity());
-   modules.add(new SetRotationNone());
-		modules.add(new SetRotationNormal2());
    modules.add(new Tracers());
    modules.add(new Spammer());
 
