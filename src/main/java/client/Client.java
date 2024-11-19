@@ -39,7 +39,7 @@ public class Client
 	public static ResourceLocation background = new ResourceLocation("client/bg1.jpg");
 
     public static void init() {
-
+makeClientDirectory();
 		commandManager.init();
 		ModuleManager.registerModules();
 		ModuleManager.loadModuleSetting();
@@ -96,5 +96,12 @@ public class Client
 			event.setCanceled(true);
 		}
 		onEvent(new EventChat(message));
+	}
+	public static void makeClientDirectory()
+	{
+		if(!FOLDER.exists())
+		{
+			FOLDER.mkdir();
+		}
 	}
 }
