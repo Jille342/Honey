@@ -53,6 +53,7 @@ public class KillAura extends Module {
     BooleanSetting esp;
     EntityLivingBase target = null;
     BooleanSetting keepsprint;
+    BooleanSetting oldAttack;
     public KillAura() {
         super("KillAura", 0,	Category.COMBAT);
     }
@@ -74,7 +75,8 @@ public class KillAura extends Module {
         esp = new BooleanSetting("Target ESP",true);
         sortmode = new ModeSetting("SortMode", "Distance", new String[]{"Distance", "Angle", "HurtTime", "Armor"});
         keepsprint = new BooleanSetting("Keep Sprint", true);
-        addSetting(keepsprint, esp,clickonly,autodisable,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,rangeSetting,rotationmode, minrotationspeed,maxrotationspeed,fov);
+        oldAttack = new BooleanSetting("Old Attack",true);
+        addSetting(oldAttack,keepsprint, esp,clickonly,autodisable,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,rangeSetting,rotationmode, minrotationspeed,maxrotationspeed,fov);
         super.init();
     }
 
@@ -103,6 +105,7 @@ public class KillAura extends Module {
 
                 if (target != null) {
                     if (attackTimer.hasReached(calculateTime((int) CPS.value)) && !target.isDead && target.isEntityAlive()) {
+                        if(oldAttack.isEnable())
                         mc.thePlayer.swingItem();
                     if(keepsprint.enable) {
                         mc.thePlayer.sendQueue.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
@@ -116,6 +119,8 @@ public class KillAura extends Module {
                           Sprint.isSprinting =true;
                       }
                     }
+                    if(!oldAttack.isEnable())
+                        mc.thePlayer.swingItem();
                         attackTimer.reset();
                     }
 

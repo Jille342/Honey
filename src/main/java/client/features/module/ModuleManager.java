@@ -63,12 +63,7 @@ public class ModuleManager {
    modules.add(new Freecam());
    modules.add(new AntiObbyTrap());
    modules.add(new HitBoxes());
-   modules.add(new HitBoxes2());
-   modules.add(new KillAura2());
-   modules.add(new KillAura3());
    modules.add(new Flight());
-   modules.add(new HitBoxesTest());
-   modules.add(new HitBoxesTest2());
    modules.add(new CivBreak());
    modules.add(new Plugins());
 		modules.add(new AntiVelocity());
@@ -76,7 +71,6 @@ public class ModuleManager {
 		modules.add(new SetRotationNormal2());
    modules.add(new Tracers());
    modules.add(new Spammer());
-   modules.add(new AntiImmobilizer());
 
 modules.add(new ViewClip());
 modules.add(new KeepSprint());
@@ -86,8 +80,6 @@ modules.add(new XRay());
 modules.add(new NoFall());
 modules.add(new LightningTrack());
 modules.add(new AdminCheckerTest());
-modules.add(new AdminCheckerTest2());
-modules.add(new AdminCheckerTest3());
 modules.add(new PacketChecker());
 modules.add(new PacketCanceller());
 modules.add(new TestModule());
@@ -96,8 +88,6 @@ modules.add(new AutoDrain());
 modules.add(new TPPlacer());
 modules.add(new AntiSwap());
 modules.add(new NoJumpDelay());
-modules.add(new KillAura4());
-modules.add(new AllAdminChecker());
 modules.add(new Flight2());
 System.out.println("Successfully loaded " + modules.size() + " modules.");
 	}

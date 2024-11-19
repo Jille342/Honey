@@ -9,7 +9,6 @@ import client.features.module.Module;
 import client.features.module.ModuleManager;
 import client.setting.ModeSetting;
 import client.setting.NumberSetting;
-import client.utils.ChatUtils;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,17 +67,8 @@ public final class AntiBot extends Module {
 
     }
 
-    private boolean isEntityBot(Entity entity) {
-        if (!(entity instanceof EntityPlayer)) {
-            return false;
-        } else if (mc.getCurrentServerData() == null) {
-            return false;
-        } else {
-            return mc.getCurrentServerData().serverIP.toLowerCase().contains("hypixel") && entity.getDisplayName().getFormattedText().startsWith("ยง") || !this.isOnTab(entity) && mc.thePlayer.ticksExisted > 100;
-        }
-    }
 
-    private boolean isOnTab(Entity entity) {
+    private static boolean isOnTab(EntityPlayer entity) {
         Iterator var2 = mc.getNetHandler().getPlayerInfoMap().iterator();
 
         NetworkPlayerInfo info;
@@ -130,6 +120,8 @@ public final class AntiBot extends Module {
                 return entityPlayer.getTeam()== null;
             case"MatrixFlying":
                 return isFlying(entityPlayer);
+            case "Tab":
+                return !isOnTab(entityPlayer);
         }
         return false;
     }
