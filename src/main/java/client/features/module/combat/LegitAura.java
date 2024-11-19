@@ -45,6 +45,7 @@ public class LegitAura extends Module {
     BooleanSetting notAimingOnly;
     BooleanSetting esp;
     BooleanSetting checkpitch;
+    BooleanSetting oldAttack;
   public static  ModeSetting rotationmode;
     public LegitAura() {
         super("LegitAura", 0,	Category.COMBAT);
@@ -66,7 +67,8 @@ public class LegitAura extends Module {
         notAimingOnly = new BooleanSetting("Not Aiming Only", true);
         esp = new BooleanSetting("Target ESP",true);
         checkpitch = new BooleanSetting("Check Pitch", false);
-        addSetting(checkpitch,esp,rotationmode,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,fov,hitThroughWalls,rangeSetting,clickOnly, notAimingOnly);
+        oldAttack = new BooleanSetting("Old Attack",true);
+        addSetting(oldAttack,checkpitch,esp,rotationmode,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,fov,hitThroughWalls,rangeSetting,clickOnly, notAimingOnly);
         super.init();
     }
 
@@ -93,7 +95,10 @@ public class LegitAura extends Module {
 
                         if (target!=null) {
                             if (attackTimer.hasReached(calculateTime((int) CPS.value)) && !target.isDead && target.isEntityAlive()) {
+                                if(!oldAttack.isEnable())
+                                    mc.thePlayer.sendQueue.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
                                 mc.thePlayer.swingItem();
+                                if(oldAttack.isEnable())
                                 mc.thePlayer.sendQueue.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
                                 attackTimer.reset();
                             }
@@ -112,7 +117,6 @@ public class LegitAura extends Module {
             if (target != null) {
                 float diff = RotationUtils.calculateYawChangeToDst(target);
                 EventMotion event = (EventMotion) e;
-
                 if (!targets.isEmpty()) {
                     if (!isNotAiming(target) && notAimingOnly.enable)
                         return;

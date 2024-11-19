@@ -1,6 +1,7 @@
 package client;
 
 import client.command.CommandManager;
+import client.config.ConfigManager;
 import client.event.listeners.EventChat;
 import client.event.Event;
 import client.event.listeners.EventPacket;
@@ -16,6 +17,8 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.io.File;
+
 import static client.Client.MOD_ID;
 import static client.Client.NAME;
 
@@ -27,11 +30,12 @@ public class Client
     public static final String VERSION = "20240805";
 	public static HUD2 hud2 = new HUD2();
 	public static String username = null;
-
+	public static ConfigManager configManager;
 
 	public static ThemeManager themeManager = new ThemeManager();
 	public static CommandManager commandManager = new CommandManager();
 	public static Minecraft mc = Minecraft.getMinecraft();
+	public static final File FOLDER = new File(mc.mcDataDir, NAME);
 	public static ResourceLocation background = new ResourceLocation("client/bg1.jpg");
 
     public static void init() {
@@ -39,6 +43,7 @@ public class Client
 		commandManager.init();
 		ModuleManager.registerModules();
 		ModuleManager.loadModuleSetting();
+		configManager = new ConfigManager();
 	}
 
         public static Event<?> onEvent(Event<?> e) {
@@ -48,6 +53,9 @@ public class Client
 			if (p instanceof S03PacketTimeUpdate) {
 				WorldUtils.onTime((S03PacketTimeUpdate) p);
 			}
+		}
+		if(e instanceof EventChat){
+			commandManager.handleCommand(((EventChat) e).getMessage());
 		}
     	ModuleManager.onEvent(e);
 		return e;
@@ -74,6 +82,12 @@ public class Client
 		}
 	}
 */
+	public static CommandManager getCommandManager(){
+		return commandManager;
+	}
+	public static ConfigManager getConfigManager(){
+		return configManager;
+	}
 	@SubscribeEvent
 	public void chatEvent(ClientChatReceivedEvent event) {
 		String message = String.valueOf(event.message);

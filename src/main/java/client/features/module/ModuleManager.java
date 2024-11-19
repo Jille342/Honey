@@ -138,6 +138,11 @@ System.out.println("Successfully loaded " + modules.size() + " modules.");
 	public static Module getModulebyName(String str) {
 		return modules.stream().filter(m -> m.getName() == str).findFirst().orElse(null);
 	}
+	public static Module getModulebyLowerName(String str)
+	{
+		return modules.stream().filter(m -> m.getName().equalsIgnoreCase(str))
+				.findFirst().orElse(null);
+	}
 
 	public static void toggle(Class<? extends Module> c) {
 		Module module = modules.stream().filter(m -> m.getClass() == c).findFirst().orElse(null);
