@@ -10,11 +10,11 @@ import java.io.InputStream;
 public class Fonts implements MCUtil {
     public static CFontRenderer default25 = new CFontRenderer(getDefault(25), true, true);
     public static CFontRenderer default22 = new CFontRenderer(getDefault(22), true, true);
-    public static CFontRenderer default20 = new CFontRenderer(getDefault(20), true, true);
-    public static CFontRenderer default18 = new CFontRenderer(getDefault(18), true, true);
-    public static CFontRenderer default16 = new CFontRenderer(getDefault(16), true, true);
+    public static CFontRenderer default20 = new CFontRenderer(getFontTTF("ElliotSans-Regular",20), true, true);
+    public static CFontRenderer default18 = new CFontRenderer(getFontTTF("ElliotSans-Regular",18), true, true);
+    public static CFontRenderer default16 = new CFontRenderer(getFontTTF("ElliotSans-Regular",16), true, true);
     public static CFontRenderer default15 = new CFontRenderer(getDefault(15), true, true);
-    public static CFontRenderer defaultTitle = new CFontRenderer(getDefault(50), true, true);
+    public static CFontRenderer defaultTitle = new CFontRenderer(getFontTTF("ElliotSans-Regular",50), true, true);
     public static CFontRenderer default13 = new CFontRenderer(getDefault(13), true, true);
     public static CFontRenderer default14 = new CFontRenderer(getDefault(14), true, true);
     public static CFontRenderer default12 = new CFontRenderer(getDefault(12), true, true);
