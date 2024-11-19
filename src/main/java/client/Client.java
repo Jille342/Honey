@@ -54,9 +54,6 @@ makeClientDirectory();
 				WorldUtils.onTime((S03PacketTimeUpdate) p);
 			}
 		}
-		if(e instanceof EventChat){
-			commandManager.handleCommand(((EventChat) e).getMessage());
-		}
     	ModuleManager.onEvent(e);
 		return e;
 	}

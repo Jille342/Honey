@@ -14,6 +14,7 @@ public class CommandManager {
     public void init() {
         commands.add(new Toggle());
         commands.add(new Prefix());
+        commands.add(new Config());
     }
 
     public boolean handleCommand(String str) {
