@@ -2,6 +2,7 @@ package client.features.module.combat;
 
 import client.event.Event;
 import client.event.listeners.EventMotion;
+import client.event.listeners.EventMoveInput;
 import client.event.listeners.EventRenderWorld;
 import client.event.listeners.EventUpdate;
 import client.features.module.Module;
@@ -44,7 +45,6 @@ public class KillAura extends Module {
     ModeSetting sortmode;
     BooleanSetting targetInvisibles;
     public static ModeSetting rotationmode;
-    Entity lastTarget;
     NumberSetting minrotationspeed;
     NumberSetting maxrotationspeed;
     BooleanSetting autodisable;
@@ -54,6 +54,8 @@ public class KillAura extends Module {
     EntityLivingBase target = null;
     BooleanSetting keepsprint;
     BooleanSetting oldAttack;
+    BooleanSetting moveFix;
+    float[] finalRotations;
     public KillAura() {
         super("KillAura", 0,	Category.COMBAT);
     }
@@ -76,7 +78,8 @@ public class KillAura extends Module {
         sortmode = new ModeSetting("SortMode", "Distance", new String[]{"Distance", "Angle", "HurtTime", "Armor"});
         keepsprint = new BooleanSetting("Keep Sprint", true);
         oldAttack = new BooleanSetting("Old Attack",true);
-        addSetting(oldAttack,keepsprint, esp,clickonly,autodisable,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,rangeSetting,rotationmode, minrotationspeed,maxrotationspeed,fov);
+        moveFix = new BooleanSetting("Move Fix", true);
+        addSetting(moveFix,oldAttack,keepsprint, esp,clickonly,autodisable,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,rangeSetting,rotationmode, minrotationspeed,maxrotationspeed,fov);
         super.init();
     }
 
@@ -126,6 +129,10 @@ public class KillAura extends Module {
 
                     if (target.isDead || !target.isEntityAlive() || target.ticksExisted < 10)
                         targets.remove(target);
+                } else {
+                    finalRotations = new float[]{
+                            mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch
+                    };
                 }
             }
 
@@ -141,32 +148,28 @@ public class KillAura extends Module {
                     return;
                 if(rotationmode.getMode().equals("RotationSpeed")) {
                     float[] neededRotations = RotationUtils.getRotationsRandom((EntityLivingBase) target);
-                    float[] limited = RotationUtils.limitAngleChange(a, neededRotations, RandomUtils.nextFloat((float) minrotationspeed.getValue(), (float) maxrotationspeed.getValue()));
-                  float[] fixed=  RotationUtils.getFixedRotation(a,limited);
+                 finalRotations = RotationUtils.limitAngleChange(a, neededRotations, RandomUtils.nextFloat((float) minrotationspeed.getValue(), (float) maxrotationspeed.getValue()));
 
-                    event.yaw = fixed[0];
-                    event.pitch = fixed[1];
-                }
+                } else
                 if(rotationmode.getMode().equalsIgnoreCase("Normal")) {
-                    float[] angles = RotationUtils.getRatationsAdvanced((EntityLivingBase) target);
-                    float[]  fixed =RotationUtils.getFixedRotation(a,angles);
+                  finalRotations = RotationUtils.getRatationsAdvanced((EntityLivingBase) target);
 
-                    event.setYaw(fixed[0]);
-                    event.setPitch(fixed[1]);
-                }
+
+                }else
                 if(rotationmode.getMode().equalsIgnoreCase("Normal2")){
-                    float[] angles = RotationUtils.getRotationsEntity((EntityLivingBase) target);
-                    float[]  fixed =RotationUtils.fixedSensitivity(angles, mc.gameSettings.mouseSensitivity);
-                    event.setYaw(fixed[0]);
-                    event.setPitch(fixed[1]);
-                }
-                if(rotationmode.getMode().equalsIgnoreCase("DevAAC")){
-                    float[] rotations = this.faceTarget(target, Math.max(10, this.getFoVDistance(a[0], target) * 0.8f), 10 + new Random().nextInt(30), false, a[0],a[1]);
-                    float[]  fixed =RotationUtils.fixedSensitivity(rotations, mc.gameSettings.mouseSensitivity);
-                    event.setYaw(fixed[0]);
-                    event.setPitch(fixed[1]);
-                }
+                   finalRotations = RotationUtils.getRotationsEntity((EntityLivingBase) target);
 
+
+                } else
+                if(rotationmode.getMode().equalsIgnoreCase("DevAAC")){
+                    finalRotations = faceTarget(target, Math.max(10, this.getFoVDistance(a[0], target) * 0.8f), 10 + new Random().nextInt(30), false, a[0],a[1]);
+
+
+
+                }
+                float[]  fixed =RotationUtils.fixedSensitivity(finalRotations, mc.gameSettings.mouseSensitivity);
+                event.setYaw(fixed[0]);
+                event.setPitch(fixed[1]);
             }
         }
         if(e instanceof EventRenderWorld) {
@@ -284,7 +287,10 @@ public class KillAura extends Module {
             return (float) MathHelper.wrapAngleTo180_double(-(mc.thePlayer.rotationYaw - Math.toDegrees(-Math.atan(diffX / diffZ))));
         }
     }
-
+    public void onMoveInput(EventMoveInput eventMoveInput){
+        if()
+        MoveUtils.fixMovement(eventMoveInput, finalRotations[0]);
+    }
     @Override
     public void onEnable() {
         targets.clear();

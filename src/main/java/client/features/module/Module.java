@@ -1,6 +1,7 @@
 package client.features.module;
 
 import client.event.Event;
+import client.event.listeners.EventMoveInput;
 import client.features.module.render.*;
 import client.setting.KeyBindSetting;
 import client.setting.Setting;
@@ -122,7 +123,14 @@ public class Module {
 	public void onEnable() {
 	}
 	public void onDisable() {}
-	public void onEvent(Event<?> e) {}
+	public void onEvent(Event<?> e) {
+		if(e instanceof EventMoveInput){
+			onMoveInput(((EventMoveInput) e));
+		}
+	}
+	public void  onMoveInput(EventMoveInput eventMoveInput){
+		
+	}
 	
 	public enum Category {
 		COMBAT("Combat"),
