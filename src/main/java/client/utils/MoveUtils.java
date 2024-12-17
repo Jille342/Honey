@@ -40,7 +40,7 @@ public class MoveUtils implements MCUtil{
     /**
      * Gets the players' movement yaw
      */
-    public double direction(float rotationYaw, final double moveForward, final double moveStrafing) {
+    public static double direction(float rotationYaw, final double moveForward, final double moveStrafing) {
         if (moveForward < 0F) rotationYaw += 180F;
 
         float forward = 1F;
