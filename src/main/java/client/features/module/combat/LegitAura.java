@@ -2,6 +2,7 @@ package client.features.module.combat;
 
 import client.event.Event;
 import client.event.listeners.EventMotion;
+import client.event.listeners.EventMoveInput;
 import client.event.listeners.EventRenderWorld;
 import client.event.listeners.EventUpdate;
 import client.features.module.Module;
@@ -46,6 +47,8 @@ public class LegitAura extends Module {
     BooleanSetting esp;
     BooleanSetting checkpitch;
     BooleanSetting oldAttack;
+    float[] finalRotations;
+    BooleanSetting moveFix;
   public static  ModeSetting rotationmode;
     public LegitAura() {
         super("LegitAura", 0,	Category.COMBAT);
@@ -68,7 +71,8 @@ public class LegitAura extends Module {
         esp = new BooleanSetting("Target ESP",true);
         checkpitch = new BooleanSetting("Check Pitch", false);
         oldAttack = new BooleanSetting("Old Attack",true);
-        addSetting(oldAttack,checkpitch,esp,rotationmode,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,fov,hitThroughWalls,rangeSetting,clickOnly, notAimingOnly);
+        moveFix = new BooleanSetting("Move Fix", true);
+        addSetting(moveFix,oldAttack,checkpitch,esp,rotationmode,CPS, targetAnimalsSetting, targetMonstersSetting, ignoreTeamsSetting, sortmode, targetInvisibles,fov,hitThroughWalls,rangeSetting,clickOnly, notAimingOnly);
         super.init();
     }
 
@@ -105,6 +109,10 @@ public class LegitAura extends Module {
 
                             if (target.isDead || !target.isEntityAlive() || target.ticksExisted < 10)
                                 targets.remove(target);
+                        } else {
+                            finalRotations = new float[]{
+                                    mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch
+                            };
                         }
                     }
 
@@ -125,17 +133,15 @@ public class LegitAura extends Module {
                         return;
 
                     if (rotationmode.getMode().equalsIgnoreCase("Normal")) {
-                        float[] angles = RotationUtils.getRotationsRandom((EntityLivingBase) target);
-                        float[]  fixed =RotationUtils.fixedSensitivity(angles, 0.1F);
-                        event.setYaw(fixed[0]);
-                        event.setPitch(fixed[1]);
-                    }
+                        finalRotations = RotationUtils.getRotationsRandom((EntityLivingBase) target);
+                    } else
 if(rotationmode.getMode().equalsIgnoreCase("Normal2")){
-    float[] angles = RotationUtils.getRotationsEntity((EntityLivingBase) target);
-    float[] fixed =RotationUtils.fixedSensitivity(angles, mc.gameSettings.mouseSensitivity);
-    event.setYaw(fixed[0]);
-    event.setPitch(fixed[1]);
+    finalRotations = RotationUtils.getRotationsEntity((EntityLivingBase) target);
+
 }
+                    float[] fixed =RotationUtils.fixedSensitivity(finalRotations, mc.gameSettings.mouseSensitivity);
+                    event.setYaw(fixed[0]);
+                    event.setPitch(fixed[1]);
                 }
             }
 
@@ -151,6 +157,10 @@ if(rotationmode.getMode().equalsIgnoreCase("Normal2")){
                 }
             }
         }
+    }
+    public void onMoveInput(EventMoveInput eventMoveInput){
+        if(moveFix.isEnable())
+            MoveUtils.fixMovement(eventMoveInput, finalRotations[0]);
     }
 
     public boolean isNotAiming(EntityLivingBase entity) {

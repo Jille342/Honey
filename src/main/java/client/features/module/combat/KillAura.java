@@ -288,7 +288,7 @@ public class KillAura extends Module {
         }
     }
     public void onMoveInput(EventMoveInput eventMoveInput){
-        if()
+        if(moveFix.isEnable())
         MoveUtils.fixMovement(eventMoveInput, finalRotations[0]);
     }
     @Override
