@@ -97,7 +97,7 @@ public void updateScreen(){
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         font.drawCenteredString(name, this.width / 2, this.height / 4, new Color(50, 200, 255).getRGB());
        font2.drawString(name+ " v." + Client.VERSION, 2, this.height - font2.getHeight() * 2 - 1, -1);
-        font2.drawString("Hello Jill Users", 2, this.height - font2.getHeight()- 1, new Color(50, 200, 255).getRGB());
+        font2.drawString("By Jill and Sirapixel", 2, this.height - font2.getHeight()- 1, new Color(50, 200, 255).getRGB());
         ForgeHooksClient.renderMainMenu(guiMainMenu , this.fontRendererObj, this.width, this.height);
         super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_);
   }
