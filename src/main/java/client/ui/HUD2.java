@@ -67,13 +67,19 @@ public class HUD2 {
         if(info2.enable){
             name = name + " " +String.format("[%s] [%dFPS]", new Object[] { time.substring(0,5), Integer.valueOf(Minecraft.getDebugFPS()) });
         }
+        if(nameBackground.isEnabled())
+        {
+            RenderingUtils.drawRect( 3, 4,
+                    (int) font2.getStringWidth(name) + 5,
+                    (int) font2.getHeight() + 5,
+                    Colors.getColor(0, 0, 0, 50));
+        }
         if (!mc.gameSettings.showDebugInfo) {
             font2.drawStringWithShadow(name, 3, 4, color);
             if (mc.currentScreen instanceof GuiChat) {
                 height += 14;
             }
             if (info.isEnable()) {
-                font.drawStringWithShadow(fps, 3, scaledResolution.getScaledHeight() - height, -1);
                 font.drawStringWithShadow(coord, font.getStringWidth(fps) + 6, scaledResolution.getScaledHeight() - height, -1);
                 font.drawStringWithShadow(ping, 3, scaledResolution.getScaledHeight() - height - font.getHeight() - 2, -1);
             }

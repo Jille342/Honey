@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class HUD extends Module {
     public static BooleanSetting background;
     public static BooleanSetting info;
+    public static BooleanSetting nameBackground;
     public static BooleanSetting OUTLINE;
     public static BooleanSetting inversion;
     public static ModeSetting colormode;
@@ -38,7 +39,8 @@ public class HUD extends Module {
         OUTLINE = new BooleanSetting("Outline", true);
         inversion = new BooleanSetting("Outline", true);
         info2 = new BooleanSetting("Info2", true);
-        addSetting(info, OUTLINE, background, colormode, inversion, namecolormode, info2);
+        nameBackground = new BooleanSetting("Name Background",true);
+        addSetting(info, OUTLINE, background, colormode, inversion, namecolormode, info2,nameBackground);
     }
 
     @Override

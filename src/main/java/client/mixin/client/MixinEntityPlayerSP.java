@@ -196,5 +196,11 @@ Client.onEvent(event);
         }
     }
     }
+    @Inject(method = "sendChatMessage", at = @At(value =  "HEAD"), cancellable = true)
+    public void sendChat(String a,CallbackInfo callbackInfo){
+        if(Client.getCommandManager().handleCommand(a)){
+            callbackInfo.cancel();
+        }
+    }
 
 }

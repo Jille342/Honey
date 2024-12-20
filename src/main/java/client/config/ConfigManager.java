@@ -2,37 +2,39 @@
 package client.config;
 
 import client.Client;
+/*    */
 import client.config.configs.ModuleConfig;
-import client.config.configs.SettingsConfig;
+/*    */
+/*    */ import client.config.configs.SettingsConfig;
 import client.features.module.Module;
 import client.features.module.ModuleManager;
 import client.setting.*;
 import client.utils.Logger;
 import org.apache.commons.io.FilenameUtils;
-
-import java.io.*;
+/*    */ import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+/*    */ import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+/*    */ import java.util.List;
 
 
 public class ConfigManager
 {
 	public List<Config> contents;
 	private List<File> customConfigs = new ArrayList<>();
-	
+
 	public static final File CONFIGS_DIR =
-		new File(Client.FOLDER, "CustomConfigs");
-	
+			new File(Client.FOLDER, "CustomConfigs");
+
 	public ConfigManager()
 	{
 		setCustomConfigs(loadConfigs());
 		Logger.logConsole("loading files...");
 		this.contents = new ArrayList<>();
+
 		add(ModuleConfig.class);
 		add(SettingsConfig.class);
-		
+
 		for(Config config : getConfigs())
 		{
 			config.load();
@@ -44,7 +46,7 @@ public class ConfigManager
 			}
 		}));
 	}
-	
+
 	public Config getFile(String name)
 	{
 		if(this.contents == null)
@@ -62,7 +64,7 @@ public class ConfigManager
 		}
 		return null;
 	}
-	
+
 	public Config getFile(Class<? extends Config> theFile)
 	{
 		if(this.contents == null)
@@ -78,7 +80,7 @@ public class ConfigManager
 		}
 		return null;
 	}
-	
+
 	public void add(Class<? extends Config> content)
 	{
 		try
@@ -89,12 +91,12 @@ public class ConfigManager
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public List<Config> getConfigs()
 	{
 		/* 75 */ return this.contents;
 		/*    */ }
-		
+
 	public boolean loadConfig(final String configName)
 	{
 		if(configName == null)
@@ -105,22 +107,22 @@ public class ConfigManager
 		this.load(config);
 		return true;
 	}
-	
+
 	public void init()
 	{
 		setCustomConfigs(loadConfigs());
 	}
-	
+
 	public void setCustomConfigs(final ArrayList<File> contents)
 	{
 		this.customConfigs = contents;
 	}
-	
+
 	public List<File> getCustomConfigs()
 	{
 		return customConfigs;
 	}
-	
+
 	public boolean saveConfig(final String configName)
 	{
 		if(configName == null)
@@ -133,7 +135,7 @@ public class ConfigManager
 		this.save(newConfig);
 		return true;
 	}
-	
+
 	public boolean deleteConfig(final String configName)
 	{
 		if(configName == null)
@@ -145,7 +147,7 @@ public class ConfigManager
 		}
 		return false;
 	}
-	
+
 	private static ArrayList<File> loadConfigs()
 	{
 		final ArrayList<File> loadedConfigs = new ArrayList<>();
@@ -160,12 +162,12 @@ public class ConfigManager
 			{
 				if(FilenameUtils.getExtension(file.getName()).equals("json"))
 					loadedConfigs.add(new File(
-						FilenameUtils.removeExtension(file.getName())));
+							FilenameUtils.removeExtension(file.getName())));
 			}
 		}
 		return loadedConfigs;
 	}
-	
+
 	public File findConfig(final String configName)
 	{
 		if(configName == null)
@@ -176,17 +178,17 @@ public class ConfigManager
 				return config;
 		}
 		File file2 = new File(CONFIGS_DIR, configName + ".json");
-		
+
 		if(file2.exists())
 			return file2;
-		
+
 		return null;
 	}
-	
+
 	public File createConfig(String name)
 	{
 		File file = new File(CONFIGS_DIR, name + ".json");
-		
+
 		if(!file.exists())
 		{
 			try
@@ -199,7 +201,7 @@ public class ConfigManager
 		}
 		return file;
 	}
-	public Setting<?> getSettingbyName(Module module, String str)
+	public  Setting<?> getSettingbyName(Module module, String str)
 	{
 		if (module == null || module.settings == null) {
 			return null;  // または例外を投げる
@@ -207,7 +209,7 @@ public class ConfigManager
 		return module.settings.stream()
 				.filter(s -> s.name != null && s.name.equalsIgnoreCase(str)).findFirst().orElse(null);
 	}
-	
+
 	public void load(File file)
 	{
 		try
@@ -224,22 +226,22 @@ public class ConfigManager
 				String[] arguments = line.split(":");
 				if(arguments.length == 3)
 				{
-				Module module =
-						ModuleManager.getModulebyLowerName(arguments[0]);
+					client.features.module.Module module =
+							ModuleManager.getModulebyLowerName(arguments[0]);
 					if(module != null)
 					{
 						Setting<?> setting =
-							getSettingbyName(module, arguments[1]);
+								getSettingbyName(module, arguments[1]);
 						if(setting != null)
 						{
 							if(setting instanceof NumberSetting)
 							{
 								((NumberSetting)setting)
-									.setValue(Double.parseDouble(arguments[2]));
+										.setValue(Double.parseDouble(arguments[2]));
 							}else if(setting instanceof BooleanSetting)
 							{
 								((BooleanSetting)setting).setEnable(
-									Boolean.parseBoolean(arguments[2]));
+										Boolean.parseBoolean(arguments[2]));
 							}else if(setting instanceof ModeSetting)
 							{
 								((ModeSetting)setting).setModes(arguments[2]);
@@ -248,7 +250,7 @@ public class ConfigManager
 							if(setting instanceof KeyBindSetting)
 							{
 								((KeyBindSetting)setting)
-									.setKeyCode(Integer.parseInt(arguments[2]));
+										.setKeyCode(Integer.parseInt(arguments[2]));
 							}
 							else if(setting instanceof MultiBooleanSetting){
 								HashMap<String, Boolean> map = ((MultiBooleanSetting) setting).getValues();
@@ -265,7 +267,7 @@ public class ConfigManager
 									map.put(key, value);
 								}
 							}
-							
+
 						}
 					}
 				}
@@ -275,7 +277,7 @@ public class ConfigManager
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public void save(File file)
 	{
 		try
@@ -289,33 +291,33 @@ public class ConfigManager
 					if(setting instanceof NumberSetting)
 					{
 						text = String.valueOf(module.getName().toLowerCase()
-							+ ":" + setting.name.toLowerCase() + ":"
-							+ ((NumberSetting)setting).getValue());
+								+ ":" + setting.name.toLowerCase() + ":"
+								+ ((NumberSetting)setting).getValue());
 					}
 					if(setting instanceof KeyBindSetting)
 					{
 						text = String.valueOf(module.getName().toLowerCase()
-							+ ":" + setting.name.toLowerCase() + ":"
-							+ ((KeyBindSetting)setting).getKeyCode());
+								+ ":" + setting.name.toLowerCase() + ":"
+								+ ((KeyBindSetting)setting).getKeyCode());
 					}
-					
+
 					if(setting instanceof ModeSetting)
 					{
 						text = String.valueOf(module.getName().toLowerCase()
-							+ ":" + setting.name.toLowerCase() + ":"
-							+ ((ModeSetting)setting).getMode());
+								+ ":" + setting.name.toLowerCase() + ":"
+								+ ((ModeSetting)setting).getMode());
 					}
 					if(setting instanceof BooleanSetting)
 					{
 						text = String.valueOf(module.getName().toLowerCase()
-							+ ":" + setting.name.toLowerCase() + ":"
-							+ ((BooleanSetting)setting).isEnabled());
+								+ ":" + setting.name.toLowerCase() + ":"
+								+ ((BooleanSetting)setting).isEnabled());
 					}
 					if( setting instanceof MultiBooleanSetting){
 						text = String.valueOf(module.getName().toLowerCase()
 								+ ":" + setting.name.toLowerCase() + ":" + ((MultiBooleanSetting) setting).getValues().toString());
 					}
-					
+
 					var4.write(text);
 					var4.newLine();
 				}
@@ -326,5 +328,5 @@ public class ConfigManager
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 }
