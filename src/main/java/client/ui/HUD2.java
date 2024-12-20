@@ -80,7 +80,7 @@ public class HUD2 {
                 height += 14;
             }
             if (info.isEnable()) {
-                font.drawStringWithShadow(coord, font.getStringWidth(fps) + 6, scaledResolution.getScaledHeight() - height, -1);
+                font.drawStringWithShadow(coord, 3, scaledResolution.getScaledHeight() - height, -1);
                 font.drawStringWithShadow(ping, 3, scaledResolution.getScaledHeight() - height - font.getHeight() - 2, -1);
             }
             font.drawStringWithShadow(build, 5, 16, -1);

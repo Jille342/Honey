@@ -9,12 +9,17 @@ import client.features.module.ModuleManager;
 import client.ui.HUD2;
 import client.ui.theme.ThemeManager;
 import client.utils.WorldUtils;
+import com.sirapixel.SkywarsMod.SkywarsMod;
+import com.sirapixel.supersheep.SuperSheep;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S03PacketTimeUpdate;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
@@ -44,6 +49,14 @@ makeClientDirectory();
 		ModuleManager.registerModules();
 		ModuleManager.loadModuleSetting();
 		configManager = new ConfigManager();
+	}
+	@Mod.EventHandler
+	public void init(FMLInitializationEvent event) {
+		MinecraftForge.EVENT_BUS.register(new SkywarsMod());
+		ClientCommandHandler.instance.registerCommand(new SuperSheep.CommandSpawnSuperSheep());
+		ClientCommandHandler.instance.registerCommand(new SuperSheep.CommandSpawnDragonRider());
+		MinecraftForge.EVENT_BUS.register(new SuperSheep.VictorySpawner());
+		MinecraftForge.EVENT_BUS.register(new SuperSheep.PositionPacketCancel());
 	}
 
         public static Event<?> onEvent(Event<?> e) {
