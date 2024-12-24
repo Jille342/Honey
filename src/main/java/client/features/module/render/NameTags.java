@@ -9,16 +9,20 @@ import client.setting.NumberSetting;
 import client.utils.Colors;
 import client.utils.font.CFontRenderer;
 import client.utils.font.Fonts;
+import com.google.gson.internal.bind.JsonTreeReader;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
 import org.lwjgl.opengl.GL11;
 
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+
+import java.awt.*;
 
 import static java.awt.Color.RED;
 
@@ -31,6 +35,7 @@ public class NameTags extends Module {
     BooleanSetting smartScaling;
     NumberSetting scaling;
     NumberSetting factor;
+    BooleanSetting strengthCheck;
     public NameTags() {
         super("NameTags", 0, Category.RENDER);
     }
@@ -43,7 +48,8 @@ public class NameTags extends Module {
         smartScaling= new BooleanSetting("Smart Scaling", true);
         scaling = new NumberSetting("Size", 1.0F,1.0, 10, 1);
         factor = new NumberSetting("Factor", 1.0F,1.0, 10, 1);
-        addSetting(renderSelf, showItems, ench,smartScaling, health, scaling, factor);
+        strengthCheck = new BooleanSetting("Strength Check", true);
+        addSetting(renderSelf, showItems, ench,smartScaling, health, scaling, factor, strengthCheck);
         super.init();
     }
 
@@ -107,8 +113,11 @@ public class NameTags extends Module {
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-
-        drawRect(-width - 2, -(mc.fontRendererObj.FONT_HEIGHT + 1), (float) width + 2.0f, 1.5f, 0x90000000);
+if(player.getActivePotionEffect(Potion.damageBoost).getIsAmbient() && strengthCheck.isEnable()) {
+    drawRect(-width - 2, -(mc.fontRendererObj.FONT_HEIGHT + 1), (float) width + 2.0f, 1.5f, 0x90000000);
+} else {
+    drawRect(-width - 2, -(mc.fontRendererObj.FONT_HEIGHT + 1), (float) width + 2.0f, 1.5f, new Color(255, 0, 0, 255).getRGB());
+}
         ItemStack renderMainHand = player.getHeldItem();
         if (this.showItems.enable) {
             GlStateManager.pushMatrix();
@@ -122,8 +131,7 @@ public class NameTags extends Module {
             xOffset += 16;
             for (ItemStack stack : player.inventory.armorInventory) {
                 if (stack == null) continue;
-                ItemStack armourStack = stack;
-                this.renderItemStack(armourStack, xOffset, -26);
+                this.renderItemStack(stack, xOffset, -26);
                 xOffset += 16;
             }
             this.renderItemStack(renderMainHand, xOffset, -26);
@@ -189,7 +197,6 @@ public class NameTags extends Module {
             this.renderEnchantmentText(stack, x, y);
         GL11.glScaled(2.0f, 2.0f, 2.0f);
         GlStateManager.enableBlend();
-
     }
 
     public void drawRect(float x, float y, float w, float h, int color) {
