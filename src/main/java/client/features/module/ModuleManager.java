@@ -87,6 +87,7 @@ modules.add(new TPPlacer());
 modules.add(new AntiSwap());
 modules.add(new NoJumpDelay());
 modules.add(new Flight2());
+modules.add(new SkywarsMod());
 System.out.println("Successfully loaded " + modules.size() + " modules.");
 	}
 

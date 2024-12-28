@@ -37,25 +37,51 @@ import org.lwjgl.opengl.GL11;
 import java.lang.reflect.Field;
 import java.util.Random;
 
+@Mod(modid = SuperSheep.MODID, version = SuperSheep.VERSION)
 public class SuperSheep {
+   public static final String MODID = "victorydance";
+   public static final String VERSION = "11451451919810";
 
    public static boolean supersheep = true;
    public static boolean dragonrider = false;
+   public static String team = "";
 
-//   @SidedProxy(clientSide = "com.sirapixel.supersheep.SuperSheep.ClientProxy", serverSide = "com.sirapixel.supersheep.SuperSheep.ServerProxy")
-//   public static CommonProxy proxy;
 
-  /*
-   @Mod.EventHandler
-   public void init(FMLInitializationEvent event) {
-      ClientCommandHandler.instance.registerCommand(new CommandSpawnSuperSheep());
-      ClientCommandHandler.instance.registerCommand(new CommandSpawnDragonRider());
-      MinecraftForge.EVENT_BUS.register(new VictorySpawner());
-      MinecraftForge.EVENT_BUS.register(new PositionPacketCancel());
-//      proxy.registerRenderers();
+   public static class CommandTeam extends CommandBase {
+
+      @Override
+      public String getCommandName() {
+         return "teamid";  // コマンド名を指定
+      }
+
+      @Override
+      public String getCommandUsage(ICommandSender sender) {
+         return "/teamid <MCID> - 相方のMCIDを設定します";
+      }
+
+      @Override
+      public void processCommand(ICommandSender sender, String[] args) {
+         if (sender instanceof EntityPlayer) {
+            if (args.length < 1) {
+               // 引数が不足している場合のエラーメッセージ
+               sender.addChatMessage(new ChatComponentText("§cエラー: MCIDを指定してください。使用方法: /teamid <MCID>"));
+               return;
+            }
+
+            // 入力されたMCIDを設定
+            team = args[0].trim();  // 前後の空白を除去
+
+            // 成功メッセージを表示
+            sender.addChatMessage(new ChatComponentText("相方のMCIDを§a" + team + "§fに設定しました！"));
+         }
+      }
+
+      @Override
+      public int getRequiredPermissionLevel() {
+         return 0;  // 0はオペレーター権限なしで実行可能（1ならオペレーター以上）
+      }
    }
 
-   */
 
    // クライアントサイドでコマンドを実行するクラス
    public static class CommandSpawnSuperSheep extends CommandBase {
@@ -282,7 +308,7 @@ public class SuperSheep {
                      if (supersheep) {
                         this.worldObj.playSound(
                                 this.posX, this.posY, this.posZ,
-                                "mob.chicken.plop", 1F, 0F, true
+                                "mob.chicken.plop", 0.1F, 0F, true
                         );
                         this.worldObj.spawnParticle(
                                 EnumParticleTypes.REDSTONE,
@@ -401,36 +427,34 @@ public class SuperSheep {
    public static class VictorySpawner {
 
       public final Minecraft mc = Minecraft.getMinecraft();
-      public World lastWorld = null;  // 最後に接続していたワールド
+      public World lastWorld = null; // 最後に接続していたワールド
 
       public VictorySpawner() {
          MinecraftForge.EVENT_BUS.register(this);
       }
-      private boolean delayExecuted = false;  // 遅延処理が実行されたかどうか
+
+      private boolean delayExecuted = false; // 遅延処理が実行されたかどうか
       private long delayTime = 400; // 遅延時間（ミリ秒、1秒）
       private long startTime; // 開始時間
       private boolean trigger = false;
 
-      @SubscribeEvent(priority = EventPriority.NORMAL)
-      public void chatReader(ClientChatReceivedEvent e) {
-         if (e.type == 0) {
-            String msg = e.message.getUnformattedText();
-            if ((msg.contains("You won! Want to play again? Click here!") || msg.contains("Winner - " + mc.thePlayer.getName()))) {
-               // 遅延を開始
+      @SubscribeEvent
+      public void onTick(TickEvent.ClientTickEvent event) {
+         String displayedTitle = getDisplayedTitle(mc.ingameGUI);
+if(mc.thePlayer ==null) {
+   return;
+}
+         if (displayedTitle != null && displayedTitle.contains("VICTORY")) {
+            if (!trigger) { // トリガーが無効の場合のみ設定
                startTime = System.currentTimeMillis();
                delayExecuted = false;
                trigger = true;
             }
          }
-      }
 
-      @SubscribeEvent
-      public void onTick(TickEvent.ClientTickEvent event) {
-//         if (getDisplayedTitle(mc.ingameGUI).contains("VICTORY!")){
-//            startTime = System.currentTimeMillis();
-//            delayExecuted = false;
-//            trigger = true;
-//         }
+         if(mc.thePlayer.ridingEntity != null){
+            trigger = false;
+         }
 
          if (!delayExecuted && System.currentTimeMillis() - startTime >= delayTime && mc.thePlayer != null) {
             delayExecuted = true;
@@ -438,22 +462,45 @@ public class SuperSheep {
             EntityPlayer player = mc.thePlayer;
             World world = player.worldObj;
 
-             if (trigger) {
-               if (supersheep) {
-                  FlyingSheep flyingSheep = new FlyingSheep(world);
-                  flyingSheep.setPosition(player.posX, player.posY, player.posZ); // プレイヤーの近くにスポーン
-                  world.spawnEntityInWorld(flyingSheep);
-                  player.mountEntity(flyingSheep);
-               } else if (dragonrider) {
-                  DragonRider dragon = new DragonRider(world);
-                  dragon.setPosition(player.posX, player.posY, player.posZ); // プレイヤーの近くにスポーン
-                  world.spawnEntityInWorld(dragon);
-                  player.mountEntity(dragon);
-                  dragon.setCustomNameTag(EnumChatFormatting.GREEN + mc.thePlayer.getName() + "'s Dragon");
-                  mc.theWorld.playSound(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, "mob.enderdragon.growl", 2.0F, 2.0F, false);
-               }
+            if (world == null) {
+               return; // worldがnullなら処理を終了
+            }
+
+            if (trigger) {
+                // 自分のドラゴンをスポーン
+                DragonRider dragon = spawnDragon(world, player);
+                dragon.setCustomNameTag(EnumChatFormatting.GREEN + player.getName() + "'s Dragon");
+
+                // 相方のドラゴンをスポーン
+                EntityPlayer teammate = getTeammate(player);
+                if (teammate != null) {
+                   DragonRider teammateDragon = spawnDragon(world, teammate);
+                   teammateDragon.setCustomNameTag(EnumChatFormatting.BLUE + teammate.getName() + "'s Dragon");
+                }
             }
          }
+      }
+
+      private DragonRider spawnDragon(World world, EntityPlayer player) {
+         DragonRider dragon = new DragonRider(world);
+         dragon.setPosition(player.posX, player.posY, player.posZ); // プレイヤーの近くにスポーン
+         world.spawnEntityInWorld(dragon);
+         player.mountEntity(dragon); // ドラゴンにプレイヤーを乗せる
+         mc.theWorld.playSound(player.posX, player.posY, player.posZ, "mob.enderdragon.growl", 2.0F, 2.0F, false);
+         return dragon;
+      }
+
+      private EntityPlayer getTeammate(EntityPlayer player) {
+         for (EntityPlayer otherPlayer : mc.theWorld.playerEntities) {
+            if (!otherPlayer.getName().equals(player.getName()) && isSameTeam(player, otherPlayer)) {
+               return otherPlayer;
+            }
+         }
+         return null;
+      }
+
+      private boolean isSameTeam(EntityPlayer player1, EntityPlayer player2) {
+         return player2.getName().equals(team); // 指定したMCIDと一致する場合に同じチームとみなす
       }
 
       public String getDisplayedTitle(GuiIngame guiIngame) {
@@ -470,7 +517,7 @@ public class SuperSheep {
       @SubscribeEvent
       public void onWorldChange(TickEvent.ClientTickEvent event) {
          if (mc.theWorld != null && mc.theWorld != lastWorld) {
-            lastWorld = mc.theWorld;  // 現在のワールドを保存
+            lastWorld = mc.theWorld; // 現在のワールドを保存
             trigger = false;
          }
       }
@@ -540,7 +587,7 @@ public class SuperSheep {
          super.onUpdate();
       }
 
-   // ファイアボールがブロックやエンティティに触れたときの処理
+      // ファイアボールがブロックやエンティティに触れたときの処理
       @Override
       protected void onImpact(MovingObjectPosition result) {
          if(!result.typeOfHit.equals(result.entityHit) && !(result.entityHit == this)) {

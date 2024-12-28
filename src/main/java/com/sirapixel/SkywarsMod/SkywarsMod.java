@@ -1,10 +1,12 @@
 
 package com.sirapixel.SkywarsMod;
 
+import client.features.module.ModuleManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -54,50 +56,52 @@ public class SkywarsMod {
 
    @SubscribeEvent
    public void chatReader(ClientChatReceivedEvent e) {
-      if (e.type == 0) {
-         String msg = e.message.getUnformattedText();
-         if (msg.contains("was struck down by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
-            e.setCanceled(true);
-            msg = msg.replace("was struck down by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "became victim #114,514 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
-            msg = this.rainbow(msg, 0);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+      if (ModuleManager.getModulebyClass(client.features.module.misc.SkywarsMod.class).isEnable()) {
+         if (e.type == 0) {
+            String msg = e.message.getUnformattedText();
+            if (msg.contains("was struck down by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
+               e.setCanceled(true);
+               msg = msg.replace("was struck down by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "became victim #114,514 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
+               msg = this.rainbow(msg, 0);
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+            }
+
+            if (msg.contains("was turned to dust by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
+               e.setCanceled(true);
+               msg = msg.replace("was turned to dust by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was void victim #114,514 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
+               msg = this.rainbow(msg, 0);
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+            }
+
+            if (msg.contains("was turned to ash by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
+               e.setCanceled(true);
+               msg = msg.replace("was turned to ash by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "became victim #114,514 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
+               msg = this.rainbow(msg, 0);
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+            }
+
+            if (msg.contains("was melted by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
+               e.setCanceled(true);
+               msg = msg.replace("was melted by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was bow kill #1,919 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
+               msg = this.rainbow(msg, 0);
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+            }
+
+            if (msg.contains("was Bomberman'd by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
+               e.setCanceled(true);
+               msg = msg.replace("was Bomberman'd by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was Bomberman'd by " + Minecraft.getMinecraft().thePlayer.getName() + ".");
+               msg = this.rainbow(msg, 0);
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+            }
+
+            if (msg.contains("was toasted by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
+               e.setCanceled(true);
+               msg = msg.replace("was toasted by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was toasted by " + Minecraft.getMinecraft().thePlayer.getName() + ".");
+               msg = this.rainbow(msg, 0);
+               Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
+            }
          }
 
-         if (msg.contains("was turned to dust by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
-            e.setCanceled(true);
-            msg = msg.replace("was turned to dust by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was void victim #114,514 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
-            msg = this.rainbow(msg, 0);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
-         }
-
-         if (msg.contains("was turned to ash by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
-            e.setCanceled(true);
-            msg = msg.replace("was turned to ash by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "became victim #114,514 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
-            msg = this.rainbow(msg, 0);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
-         }
-
-         if (msg.contains("was melted by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
-            e.setCanceled(true);
-            msg = msg.replace("was melted by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was bow kill #1,919 of " + Minecraft.getMinecraft().thePlayer.getName() + ".");
-            msg = this.rainbow(msg, 0);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
-         }
-
-         if (msg.contains("was Bomberman'd by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
-            e.setCanceled(true);
-            msg = msg.replace("was Bomberman'd by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was Bomberman'd by " + Minecraft.getMinecraft().thePlayer.getName() + ".");
-            msg = this.rainbow(msg, 0);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
-         }
-
-         if (msg.contains("was toasted by " + Minecraft.getMinecraft().thePlayer.getName() + ".")) {
-            e.setCanceled(true);
-            msg = msg.replace("was toasted by " + Minecraft.getMinecraft().thePlayer.getName() + ".", "was toasted by " + Minecraft.getMinecraft().thePlayer.getName() + ".");
-            msg = this.rainbow(msg, 0);
-            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(msg));
-         }
       }
-
    }
 }
