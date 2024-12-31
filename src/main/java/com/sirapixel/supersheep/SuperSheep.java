@@ -1,5 +1,6 @@
 package com.sirapixel.supersheep;
 
+import client.features.module.ModuleManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -46,6 +47,20 @@ public class SuperSheep {
    public static boolean dragonrider = false;
    public static String team = "";
 
+//   @SidedProxy(clientSide = "com.sirapixel.supersheep.SuperSheep.ClientProxy", serverSide = "com.sirapixel.supersheep.SuperSheep.ServerProxy")
+//   public static CommonProxy proxy;
+/*
+   @Mod.EventHandler
+   public void init(FMLInitializationEvent event) {
+      ClientCommandHandler.instance.registerCommand(new CommandTeam());
+      ClientCommandHandler.instance.registerCommand(new CommandSpawnSuperSheep());
+      ClientCommandHandler.instance.registerCommand(new CommandSpawnDragonRider());
+      MinecraftForge.EVENT_BUS.register(new VictorySpawner());
+      MinecraftForge.EVENT_BUS.register(new PositionPacketCancel());
+//      proxy.registerRenderers();
+   }
+
+ */
 
    public static class CommandTeam extends CommandBase {
 
@@ -440,43 +455,55 @@ public class SuperSheep {
 
       @SubscribeEvent
       public void onTick(TickEvent.ClientTickEvent event) {
-         String displayedTitle = getDisplayedTitle(mc.ingameGUI);
-if(mc.thePlayer ==null) {
-   return;
-}
-         if (displayedTitle != null && displayedTitle.contains("VICTORY")) {
-            if (!trigger) { // トリガーが無効の場合のみ設定
-               startTime = System.currentTimeMillis();
-               delayExecuted = false;
-               trigger = true;
-            }
-         }
+         if(mc.thePlayer != null && mc.theWorld != null) {
+            String displayedTitle = getDisplayedTitle(mc.ingameGUI);
 
-         if(mc.thePlayer.ridingEntity != null){
-            trigger = false;
-         }
-
-         if (!delayExecuted && System.currentTimeMillis() - startTime >= delayTime && mc.thePlayer != null) {
-            delayExecuted = true;
-
-            EntityPlayer player = mc.thePlayer;
-            World world = player.worldObj;
-
-            if (world == null) {
-               return; // worldがnullなら処理を終了
+            if (displayedTitle != null && displayedTitle.contains("VICTORY")) {
+               if (!trigger) { // トリガーが無効の場合のみ設定
+                  startTime = System.currentTimeMillis();
+                  delayExecuted = false;
+                  trigger = true;
+               }
             }
 
-            if (trigger) {
-                // 自分のドラゴンをスポーン
-                DragonRider dragon = spawnDragon(world, player);
-                dragon.setCustomNameTag(EnumChatFormatting.GREEN + player.getName() + "'s Dragon");
+            if (mc.thePlayer.ridingEntity != null) {
+               trigger = false;
+            }
 
-                // 相方のドラゴンをスポーン
-                EntityPlayer teammate = getTeammate(player);
-                if (teammate != null) {
-                   DragonRider teammateDragon = spawnDragon(world, teammate);
-                   teammateDragon.setCustomNameTag(EnumChatFormatting.BLUE + teammate.getName() + "'s Dragon");
-                }
+            if (!delayExecuted && System.currentTimeMillis() - startTime >= delayTime && mc.thePlayer != null) {
+               delayExecuted = true;
+
+               EntityPlayer player = mc.thePlayer;
+               World world = player.worldObj;
+
+               if (world == null) {
+                  return; // worldがnullなら処理を終了
+               }
+
+               if (trigger && ModuleManager.getModulebyClass(client.features.module.misc.SuperSheep.class).isEnable()) {
+                  if (client.features.module.misc.SuperSheep.mode.is("DragonRider")) {
+                     // 自分のドラゴンをスポーン
+                     DragonRider dragon = spawnDragon(world, player);
+                     dragon.setCustomNameTag(EnumChatFormatting.GREEN + player.getName() + "'s Dragon");
+
+                     // 相方のドラゴンをスポーン
+                     EntityPlayer teammate = getTeammate(player);
+                     if (teammate != null) {
+                        DragonRider teammateDragon = spawnDragon(world, teammate);
+                        teammateDragon.setCustomNameTag(EnumChatFormatting.BLUE + teammate.getName() + "'s Dragon");
+                     }
+                  }
+                  if (client.features.module.misc.SuperSheep.mode.is("SuperSheep")) {
+                     // 自分のドラゴンをスポーン
+                     spawnSheep(world, player);
+
+                     // 相方のドラゴンをスポーン
+                     EntityPlayer teammate = getTeammate(player);
+                     if (teammate != null) {
+                        spawnSheep(world, teammate);
+                     }
+                  }
+               }
             }
          }
       }
@@ -488,6 +515,14 @@ if(mc.thePlayer ==null) {
          player.mountEntity(dragon); // ドラゴンにプレイヤーを乗せる
          mc.theWorld.playSound(player.posX, player.posY, player.posZ, "mob.enderdragon.growl", 2.0F, 2.0F, false);
          return dragon;
+      }
+
+      private FlyingSheep spawnSheep(World world, EntityPlayer player) {
+         FlyingSheep sheep = new FlyingSheep(world);
+         sheep.setPosition(player.posX, player.posY, player.posZ);
+         world.spawnEntityInWorld(sheep);
+         player.mountEntity(sheep);
+         return sheep;
       }
 
       private EntityPlayer getTeammate(EntityPlayer player) {
@@ -504,6 +539,8 @@ if(mc.thePlayer ==null) {
       }
 
       public String getDisplayedTitle(GuiIngame guiIngame) {
+         if (mc.theWorld == null)
+            return null;
          try {
             Field titleField = GuiIngame.class.getDeclaredField("displayedTitle");
             titleField.setAccessible(true); // アクセス可能にする

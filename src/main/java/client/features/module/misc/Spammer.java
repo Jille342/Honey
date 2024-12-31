@@ -13,7 +13,7 @@ public class Spammer extends Module {
     public void onEvent(Event<?> e) {
         if(e instanceof EventUpdate) {
             if (mc.thePlayer.ticksExisted % 15 == 0) {
-                mc.thePlayer.sendChatMessage("!#XX #XA #ASD(AntiSetsiDef) #Jill's mod #XX Shotbow Client get it this client → https://discord.gg/antisetsidef");
+                mc.thePlayer.sendChatMessage("");
                         mc.thePlayer.ticksExisted = 0;
             }
         }

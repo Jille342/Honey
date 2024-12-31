@@ -2,6 +2,7 @@ package client.features.module;
 
 import client.event.Event;
 import client.event.listeners.EventKey;
+import client.event.listeners.EventUpdate;
 import client.features.module.combat.*;
 import client.features.module.misc.*;
 import client.features.module.movement.*;
@@ -116,11 +117,11 @@ System.out.println("Successfully loaded " + modules.size() + " modules.");
 			}
 		}
 		Collections.sort(ModuleManager.modules, new ModuleComparator());
-
 		ModuleManager.modules.stream().forEach(m -> {
 			if(m.isEnable()) m.onEvent(e);
 		});
 	}
+
 
 	public static List<Module> getModulesbyCategory(Module.Category c) {
 		List<Module> moduleList = new ArrayList<>();

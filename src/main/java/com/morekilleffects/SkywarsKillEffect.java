@@ -31,7 +31,7 @@ public class SkywarsKillEffect {
       MinecraftForge.EVENT_BUS.register(new Event(this));
       ClientCommandHandler.instance.registerCommand(new Command(this));
    }
-
+/*
    @EventHandler
    public void init(FMLInitializationEvent event) {
    }
@@ -39,6 +39,8 @@ public class SkywarsKillEffect {
    @EventHandler
    public void postInit(FMLPostInitializationEvent event) {
    }
+
+ */
 
    public KillEffectManager getKillEffectManager() {
       return this.killEffectManager;

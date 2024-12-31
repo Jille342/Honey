@@ -2,6 +2,7 @@ package client.features.module;
 
 import client.event.Event;
 import client.event.listeners.EventMoveInput;
+import client.event.listeners.EventUpdate;
 import client.features.module.render.*;
 import client.setting.KeyBindSetting;
 import client.setting.Setting;
@@ -127,9 +128,15 @@ public class Module {
 		if(e instanceof EventMoveInput){
 			onMoveInput(((EventMoveInput) e));
 		}
+		if(e instanceof EventUpdate){
+			onUpdate(((EventUpdate) e));
+		}
 	}
 	public void  onMoveInput(EventMoveInput eventMoveInput){
 		
+	}
+	public void onUpdate(EventUpdate event){
+
 	}
 	
 	public enum Category {
